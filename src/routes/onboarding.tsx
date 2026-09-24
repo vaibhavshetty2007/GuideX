@@ -1,0 +1,16 @@
+import { Link, createFileRoute } from "@tanstack/react-router";
+import { ArrowRight, Check } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { GuideXShell } from "@/components/guidex-shell";
+
+export const Route = createFileRoute("/onboarding")({ head: () => ({ meta: [
+  { title: "Build My Learning Path — GuideX" },
+  { name: "description", content: "Create a focused Computer Science learning path with GuideX." },
+  { property: "og:title", content: "Build My Learning Path — GuideX" },
+  { property: "og:description", content: "Create a focused Computer Science learning path with GuideX." },
+  { property: "og:type", content: "website" },
+  { name: "twitter:card", content: "summary_large_image" },
+] }), component: OnboardingPage });
+
+function OnboardingPage() { const [level, setLevel] = useState("Beginner"); const [goal, setGoal] = useState("Software Engineer"); const [time, setTime] = useState("1 hour/day"); const [language, setLanguage] = useState("JavaScript"); const options = [["Current level", ["Beginner", "Intermediate", "Advanced"], level, setLevel], ["Goal", ["Software Engineer", "DSA / Interviews", "Web Developer", "Cloud Engineer"], goal, setGoal], ["Study time", ["30 min/day", "1 hour/day", "2 hours/day", "3+ hours/day"], time, setTime], ["Preferred language", ["JavaScript", "Python", "C++", "Go"], language, setLanguage]] as const; return <GuideXShell><main className="mx-auto max-w-5xl px-6 py-16"><div className="max-w-2xl"><p className="font-mono text-[11px] uppercase tracking-[0.18em] text-acid">02 / Build</p><h1 className="mt-3 font-display text-5xl leading-none md:text-7xl">Make the path fit you.</h1><p className="mt-5 text-sm leading-relaxed text-dim">Four signals are enough to choose a useful starting point. You can change any of them later.</p></div><div className="mt-12 grid gap-4 md:grid-cols-2">{options.map(([title, items, value, setter], index) => <div key={title} className="border border-line bg-surface p-5"><div className="flex items-center justify-between"><span className="font-mono text-[11px] uppercase tracking-[0.15em] text-acid">0{index + 1}</span><span className="font-mono text-[10px] text-dim">{title}</span></div><h2 className="mt-8 font-display text-3xl">{value}</h2><div className="mt-5 space-y-2">{items.map((item) => <button key={item} onClick={() => setter(item)} className={`flex w-full items-center justify-between border px-3 py-3 text-left text-sm transition-colors ${value === item ? "border-acid text-paper" : "border-line text-dim hover:border-paper hover:text-paper"}`}>{item}{value === item ? <Check className="size-3.5 text-acid" /> : null}</button>)}</div></div>)}</div><div className="mt-6 flex flex-col justify-between gap-4 border border-acid/40 bg-acid/5 p-6 md:flex-row md:items-center"><div><p className="font-mono text-[10px] uppercase tracking-[0.15em] text-acid">Your starting signal</p><h2 className="mt-2 font-display text-3xl">{goal} · {level}</h2><p className="mt-1 text-sm text-dim">{time} with {language} — about 6 topics to begin.</p></div><Button asChild className="rounded-none bg-acid font-mono text-xs uppercase tracking-[0.12em] text-ink hover:bg-paper"><Link to="/dashboard">Generate path <ArrowRight className="size-3.5" /></Link></Button></div></main></GuideXShell>; }
