@@ -19,6 +19,18 @@
  */
 
 @theme inline {
+  --font-display: "Anton", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  --color-ink: var(--ink);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --color-paper: var(--paper);
+  --color-acid: var(--acid);
+  --color-flame: var(--flame);
+  --color-sky: var(--sky);
+  --color-plum: var(--plum);
+  --color-dim: var(--dim);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -62,6 +74,15 @@
 }
 
 :root {
+  --ink: oklch(0.16 0.02 125);
+  --surface: oklch(0.205 0.025 125);
+  --line: oklch(0.28 0.03 125);
+  --paper: oklch(0.95 0.025 95);
+  --acid: oklch(0.88 0.2 114);
+  --flame: oklch(0.7 0.19 43);
+  --sky: oklch(0.74 0.13 240);
+  --plum: oklch(0.72 0.15 305);
+  --dim: oklch(0.63 0.035 125);
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.129 0.042 264.695);
@@ -138,7 +159,16 @@
   }
 
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
+    background-color: var(--color-ink);
+    color: var(--color-paper);
+    font-family: var(--font-body);
   }
+
+  button, a, input { font-family: inherit; }
+  ::selection { background: var(--color-acid); color: var(--color-ink); }
 }
+
+@keyframes gx-rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes gx-draw { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes gx-pulse { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-acid) 50%, transparent); } 50% { box-shadow: 0 0 0 7px color-mix(in oklab, var(--color-acid) 0%, transparent); } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition-duration: 0.01ms !important; } }
