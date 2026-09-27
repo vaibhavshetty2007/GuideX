@@ -60,9 +60,13 @@ export const dsaPhases = [
 ];
 
 export function getDomain(slug: string) {
-  return domains.find((domain) => domain.slug === slug) ?? domains[0];
+  const domain = domains.find((entry) => entry.slug === slug);
+  if (!domain) throw new Error(`Unknown GuideX domain: ${slug}`);
+  return domain;
 }
 
 export function getTopic(id: string) {
-  return topics.find((topic) => topic.id === id) ?? topics.find((topic) => topic.id === "arrays");
+  const topic = topics.find((entry) => entry.id === id) ?? topics.find((entry) => entry.id === "arrays");
+  if (!topic) throw new Error(`Unknown GuideX topic: ${id}`);
+  return topic;
 }

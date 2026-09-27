@@ -66,7 +66,7 @@ export function GuideXShell({ children }: { children: ReactNode }) {
 
 function SearchOverlay({ onClose, onNavigate }: { onClose: () => void; onNavigate: (id: string) => void }) {
   const [query, setQuery] = useState("");
-  const results = [
+  const results: Array<[string, string, string]> = [
     ["arrays", "Arrays", "DSA & Problem Solving"],
     ["linked-lists", "Linked Lists", "DSA & Problem Solving"],
     ["variables", "Variables", "Programming Fundamentals"],
