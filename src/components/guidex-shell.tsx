@@ -71,7 +71,7 @@ function SearchOverlay({ onClose, onNavigate }: { onClose: () => void; onNavigat
     ["linked-lists", "Linked Lists", "DSA & Problem Solving"],
     ["variables", "Variables", "Programming Fundamentals"],
     ["trees", "Trees", "DSA & Problem Solving"],
-  ].filter(([, title, domain]) => `${title} ${domain}`.toLowerCase().includes(query.toLowerCase()));
+  ].filter(([, title, domain]) => `${title} ${domain}`.toLowerCase().includes(query.toLowerCase())) as Array<[string, string, string]>;
   return <div className="fixed inset-0 z-50 flex items-start justify-center bg-ink/80 px-4 pt-[14vh] backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Search GuideX">
     <div className="w-full max-w-xl border border-line bg-surface shadow-2xl">
       <div className="flex items-center gap-3 border-b border-line px-4 py-3"><Search className="size-4 text-dim" /><input autoFocus value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search topics, domains, concepts..." className="flex-1 bg-transparent font-mono text-sm text-paper outline-none placeholder:text-dim" /><Button variant="ghost" size="icon" onClick={onClose} className="size-7 text-dim hover:bg-ink hover:text-paper" aria-label="Close search"><X className="size-4" /></Button></div>
