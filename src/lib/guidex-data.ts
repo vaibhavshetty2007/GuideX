@@ -2,6 +2,7 @@ export type TopicStatus = "done" | "next" | "queued";
 
 export type Topic = {
   id: string;
+  domainSlug: string;
   title: string;
   description: string;
   difficulty: "Beginner" | "Intermediate" | "Advanced";
@@ -42,22 +43,165 @@ export const domains: Domain[] = [
   { slug: "software-engineering", name: "Software Engineering", shortName: "Engineering", description: "Turn working code into software that teams can evolve with confidence.", difficulty: "Intermediate", topicCount: 34, progress: 0, signal: "sky", icon: "⚙", phases: ["Code quality", "Testing", "Architecture", "Team practices"] },
 ];
 
-export const topics: Topic[] = [
-  { id: "programming-fundamentals", title: "Programming Fundamentals", description: "The smallest set of ideas that makes every later concept easier to place.", difficulty: "Beginner", minutes: 35, status: "done", prerequisites: [], next: ["variables", "data-types"], concepts: ["Values and expressions", "Control flow", "Functions", "Memory"] },
-  { id: "variables", title: "Variables", description: "Names are handles for values. Understanding that distinction makes scope, mutation, and memory click.", difficulty: "Beginner", minutes: 24, status: "done", prerequisites: ["Programming Fundamentals"], next: ["data-types", "operators"], concepts: ["Bindings", "Mutation", "Lifetime", "Naming"] },
-  { id: "data-types", title: "Data Types", description: "Values carry shape and behavior. Types tell you what operations are safe and what representation is underneath.", difficulty: "Beginner", minutes: 28, status: "done", prerequisites: ["Variables"], next: ["operators", "arrays"], concepts: ["Primitive types", "References", "Type conversion", "Nullability"] },
-  { id: "arrays", title: "Arrays", description: "A contiguous sequence is the first data structure that connects abstract operations to memory layout.", difficulty: "Beginner", minutes: 42, status: "next", prerequisites: ["Variables", "Data Types"], next: ["strings", "dynamic-arrays", "linked-lists"], concepts: ["Indexing", "Traversal", "Insertion", "Deletion", "Searching", "Contiguous memory"] },
-  { id: "linked-lists", title: "Linked Lists", description: "Nodes and references trade contiguous access for flexible structure — a useful contrast to arrays.", difficulty: "Beginner", minutes: 48, status: "queued", prerequisites: ["Arrays", "Pointers / References"], next: ["stacks", "queues", "trees"], concepts: ["Nodes", "References", "Singly linked", "Doubly linked"] },
-  { id: "trees", title: "Trees", description: "Hierarchies become navigable when you can reason about recursive structure and traversal.", difficulty: "Intermediate", minutes: 55, status: "queued", prerequisites: ["Recursion", "Linked Lists"], next: ["binary-search-trees", "heaps", "graphs"], concepts: ["Root and leaves", "Traversal", "Binary trees", "Balance"] },
-];
-
-export const dsaPhases = [
+const dsaPhases = [
   { name: "Programming Foundations", topics: ["Programming Fundamentals", "Variables", "Data Types", "Operators", "Conditions", "Loops", "Functions", "Scope"] },
   { name: "Core Data Structures", topics: ["Arrays", "Strings", "Linked Lists", "Stack", "Queue", "Deque", "Hashing", "Trees"] },
   { name: "Algorithmic Thinking", topics: ["Time Complexity", "Space Complexity", "Searching", "Sorting", "Binary Search", "Two Pointers", "Sliding Window"] },
   { name: "Advanced Data Structures", topics: ["Heaps", "Priority Queue", "Trie", "Graphs", "Union Find"] },
   { name: "Problem Solving Patterns", topics: ["Greedy", "Backtracking", "Divide and Conquer", "Dynamic Programming", "Bit Manipulation"] },
 ];
+
+const roadmapTopics: Record<string, { name: string; topics: string[] }[]> = {
+  web: [
+    { name: "Internet Fundamentals", topics: ["How the Internet Works", "DNS", "HTTP and HTTPS", "Browsers and Servers"] },
+    { name: "HTML & CSS", topics: ["HTML Structure", "Semantic HTML", "CSS Foundations", "Responsive Layout"] },
+    { name: "JavaScript", topics: ["JavaScript Basics", "DOM and Events", "Async JavaScript", "Fetch and APIs"] },
+    { name: "Frontend Architecture", topics: ["Components", "State Management", "TypeScript", "Frontend Routing"] },
+    { name: "Production Web", topics: ["Testing", "Web Security", "Performance", "Deployment"] },
+  ],
+  backend: [
+    { name: "HTTP Foundations", topics: ["HTTP Requests", "API Contracts", "REST Principles", "Input Validation"] },
+    { name: "API Design", topics: ["Routing and Controllers", "Authentication", "Authorization", "Error Handling"] },
+    { name: "Persistence", topics: ["Database Access", "Data Modeling", "Caching", "Migrations"] },
+    { name: "Reliability", topics: ["Logging", "Testing Services", "Rate Limiting", "Background Jobs"] },
+    { name: "Service Architecture", topics: ["Service Boundaries", "Messaging", "Scalability", "Deployment"] },
+  ],
+  databases: [
+    { name: "Data Modeling", topics: ["Relational Data", "Tables and Keys", "Relationships", "Normalization"] },
+    { name: "SQL", topics: ["SELECT Queries", "Filtering and Sorting", "Joins", "Aggregations"] },
+    { name: "Indexes", topics: ["Index Fundamentals", "B-Trees", "Query Plans", "Index Tradeoffs"] },
+    { name: "Transactions", topics: ["Transactions", "ACID Properties", "Isolation Levels", "Concurrency"] },
+    { name: "Distributed Data", topics: ["Replication", "Partitioning", "Consistency", "Recovery"] },
+  ],
+  os: [
+    { name: "Processes", topics: ["Programs and Processes", "Process States", "System Calls", "Threads"] },
+    { name: "Memory", topics: ["Address Spaces", "Virtual Memory", "Paging", "Memory Allocation"] },
+    { name: "Concurrency", topics: ["Race Conditions", "Locks", "Deadlocks", "Scheduling"] },
+    { name: "Filesystems", topics: ["Files and Directories", "File Descriptors", "Storage Blocks", "Permissions"] },
+    { name: "Kernel Interfaces", topics: ["Kernel Mode", "Device Drivers", "Networking Interfaces", "Resource Limits"] },
+  ],
+  networks: [
+    { name: "Network Foundations", topics: ["Packets and Layers", "IP Addressing", "Subnetting", "Ethernet"] },
+    { name: "Transport", topics: ["Ports and Sockets", "TCP", "UDP", "TLS"] },
+    { name: "Routing", topics: ["Routing Tables", "DNS Resolution", "NAT", "Load Balancing"] },
+    { name: "Security", topics: ["Firewalls", "Certificates", "Network Threats", "Secure Channels"] },
+    { name: "Distributed Networking", topics: ["Proxies", "CDNs", "Service Discovery", "Network Resilience"] },
+  ],
+  cloud: [
+    { name: "Cloud Concepts", topics: ["Cloud Service Models", "Regions and Zones", "Shared Responsibility", "Cloud Pricing"] },
+    { name: "Compute & Storage", topics: ["Virtual Machines", "Object Storage", "Containers", "Serverless Compute"] },
+    { name: "Networking", topics: ["Virtual Networks", "Subnets and Routing", "Load Balancers", "Private Connectivity"] },
+    { name: "Security", topics: ["Identity and Access", "Secrets Management", "Encryption", "Cloud Security Posture"] },
+    { name: "Architecture", topics: ["Autoscaling", "Monitoring and Logs", "High Availability", "Disaster Recovery"] },
+  ],
+  devops: [
+    { name: "Linux", topics: ["Shell Basics", "Files and Permissions", "Processes", "SSH"] },
+    { name: "Containers", topics: ["Container Concepts", "Docker Images", "Docker Networking", "Container Registries"] },
+    { name: "CI/CD", topics: ["Build Pipelines", "Automated Tests", "GitHub Actions", "Release Strategies"] },
+    { name: "Infrastructure as Code", topics: ["Infrastructure Concepts", "Terraform Basics", "State and Modules", "Configuration Management"] },
+    { name: "Observability", topics: ["Metrics", "Logs and Traces", "Alerting", "Incident Response"] },
+  ],
+  "system-design": [
+    { name: "Design Fundamentals", topics: ["Requirements", "Capacity Estimation", "API Design", "Data Modeling"] },
+    { name: "Scalability", topics: ["Caching", "Load Balancing", "Database Scaling", "Queues"] },
+    { name: "Distributed Systems", topics: ["Replication", "Consistency", "Partitioning", "Consensus Basics"] },
+    { name: "Reliability", topics: ["Failure Modes", "Redundancy", "Observability", "Resilience Patterns"] },
+    { name: "Case Studies", topics: ["URL Shortener", "News Feed", "File Storage", "Real-Time Messaging"] },
+  ],
+  security: [
+    { name: "Security Foundations", topics: ["Threat Modeling", "Security Principles", "Risk Assessment", "Secure Defaults"] },
+    { name: "Application Security", topics: ["Input Validation", "Injection Attacks", "Web Security", "Secure Development"] },
+    { name: "Identity", topics: ["Authentication", "Authorization", "Sessions and Tokens", "Multifactor Security"] },
+    { name: "Cryptography", topics: ["Hashing", "Symmetric Encryption", "Public-Key Encryption", "Certificates"] },
+    { name: "Defense", topics: ["Network Defense", "Vulnerability Management", "Monitoring", "Incident Response"] },
+  ],
+  "ai-ml": [
+    { name: "Math Foundations", topics: ["Linear Algebra", "Probability", "Statistics", "Gradient Intuition"] },
+    { name: "Machine Learning", topics: ["Supervised Learning", "Model Evaluation", "Feature Engineering", "Unsupervised Learning"] },
+    { name: "Deep Learning", topics: ["Neural Networks", "Backpropagation", "Convolutional Networks", "Transformers"] },
+    { name: "Evaluation", topics: ["Training and Validation", "Metrics", "Overfitting", "Responsible Evaluation"] },
+    { name: "ML Systems", topics: ["Data Pipelines", "Model Serving", "Monitoring Models", "ML Operations"] },
+  ],
+  git: [
+    { name: "Version Control", topics: ["Repositories", "Commits", "Branches", "Merge Conflicts"] },
+    { name: "Collaboration", topics: ["Remotes", "Pull Requests", "Code Review", "Release Tags"] },
+    { name: "Automation", topics: ["Git Hooks", "GitHub Actions", "Issue Workflows", "Project Permissions"] },
+  ],
+  programming: [
+    { name: "Syntax & Values", topics: ["Variables", "Data Types", "Operators", "Expressions"] },
+    { name: "Control Flow", topics: ["Conditions", "Loops", "Iteration", "Error Handling"] },
+    { name: "Functions", topics: ["Function Basics", "Parameters and Returns", "Scope", "Recursion"] },
+    { name: "Memory", topics: ["References", "Value and Reference", "Stack and Heap", "Mutability"] },
+    { name: "Practice", topics: ["Decomposition", "Debugging", "Testing Basics", "Small Programs"] },
+  ],
+  "software-engineering": [
+    { name: "Code Quality", topics: ["Readable Code", "Refactoring", "Design Principles", "Code Reviews"] },
+    { name: "Testing", topics: ["Unit Testing", "Integration Testing", "Test Doubles", "Continuous Testing"] },
+    { name: "Architecture", topics: ["Module Boundaries", "Dependency Management", "Architecture Patterns", "Technical Debt"] },
+    { name: "Team Practices", topics: ["Git Collaboration", "Planning Work", "Documentation", "Reliable Releases"] },
+  ],
+};
+
+const curatedTopics: Topic[] = [
+  { id: "programming-fundamentals", domainSlug: "dsa", title: "Programming Fundamentals", description: "The smallest set of ideas that makes every later concept easier to place.", difficulty: "Beginner", minutes: 35, status: "done", prerequisites: [], next: ["variables", "data-types"], concepts: ["Values and expressions", "Control flow", "Functions", "Memory"] },
+  { id: "variables", domainSlug: "dsa", title: "Variables", description: "Names are handles for values. Understanding that distinction makes scope, mutation, and memory click.", difficulty: "Beginner", minutes: 24, status: "done", prerequisites: ["Programming Fundamentals"], next: ["data-types", "operators"], concepts: ["Bindings", "Mutation", "Lifetime", "Naming"] },
+  { id: "data-types", domainSlug: "dsa", title: "Data Types", description: "Values carry shape and behavior. Types tell you what operations are safe and what representation is underneath.", difficulty: "Beginner", minutes: 28, status: "done", prerequisites: ["Variables"], next: ["operators", "arrays"], concepts: ["Primitive types", "References", "Type conversion", "Nullability"] },
+  { id: "arrays", domainSlug: "dsa", title: "Arrays", description: "A contiguous sequence is the first data structure that connects abstract operations to memory layout.", difficulty: "Beginner", minutes: 42, status: "next", prerequisites: ["Variables", "Data Types"], next: ["strings", "dynamic-arrays", "linked-lists"], concepts: ["Indexing", "Traversal", "Insertion", "Deletion", "Searching", "Contiguous memory"] },
+  { id: "linked-lists", domainSlug: "dsa", title: "Linked Lists", description: "Nodes and references trade contiguous access for flexible structure — a useful contrast to arrays.", difficulty: "Beginner", minutes: 48, status: "queued", prerequisites: ["Arrays", "Pointers / References"], next: ["stacks", "queues", "trees"], concepts: ["Nodes", "References", "Singly linked", "Doubly linked"] },
+  { id: "trees", domainSlug: "dsa", title: "Trees", description: "Hierarchies become navigable when you can reason about recursive structure and traversal.", difficulty: "Intermediate", minutes: 55, status: "queued", prerequisites: ["Recursion", "Linked Lists"], next: ["binary-search-trees", "heaps", "graphs"], concepts: ["Root and leaves", "Traversal", "Binary trees", "Balance"] },
+];
+
+function slugifyTopic(title: string) {
+  return title.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+const topicCurriculums: Record<string, { name: string; topics: string[] }[]> = { ...roadmapTopics, dsa: dsaPhases };
+
+function createRoadmapTopics(): Topic[] {
+  return domains.flatMap((domain) => {
+    const phases = topicCurriculums[domain.slug] ?? [];
+    const titles = phases.flatMap((phase) => phase.topics);
+    return titles.flatMap((title, index) => {
+      const curated = curatedTopics.find((topic) => topic.domainSlug === domain.slug && topic.title === title);
+      if (curated) return [];
+      const id = domain.slug === "dsa" ? slugifyTopic(title) : `${domain.slug}-${slugifyTopic(title)}`;
+      const previous = titles[index - 1];
+      const next = titles[index + 1];
+      return [{
+        id,
+        domainSlug: domain.slug,
+        title,
+        description: `${title} is part of ${domain.name}. Learn the core ideas, understand where it fits, and connect it to the concepts that come before and after it.`,
+        difficulty: index > titles.length * 0.65 ? "Intermediate" as const : domain.difficulty === "Advanced" ? "Intermediate" as const : "Beginner" as const,
+        minutes: 25,
+        status: index === 0 ? "next" as const : "queued" as const,
+        prerequisites: previous ? [previous] : [],
+        next: next ? [`${domain.slug === "dsa" ? "" : `${domain.slug}-`}${slugifyTopic(next)}`] : [],
+        concepts: [title, `${title} fundamentals`, `${title} in ${domain.name}`, "When to use it"],
+      }];
+    });
+  });
+}
+
+export const topics: Topic[] = [...curatedTopics, ...createRoadmapTopics()];
+
+export function getRoadmapPhases(domainSlug: string) {
+  const phases = topicCurriculums[domainSlug] ?? [];
+  return phases.map((phase) => ({
+    name: phase.name,
+    topics: phase.topics.map((title) => {
+      const topic = topics.find((entry) => entry.domainSlug === domainSlug && entry.title === title);
+      if (!topic) throw new Error(`Missing GuideX topic: ${domainSlug}/${title}`);
+      return topic;
+    }),
+  }));
+}
+
+export function getTopic(id: string) {
+  const topic = topics.find((entry) => entry.id === id);
+  if (!topic) throw new Error(`Unknown GuideX topic: ${id}`);
+  return topic;
+}
 
 export function getDomain(slug: string) {
   const domain = domains.find((entry) => entry.slug === slug);
