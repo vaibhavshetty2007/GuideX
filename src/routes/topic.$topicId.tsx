@@ -1,6 +1,6 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, Check, Clock3, GitBranch, Circle } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { GuideXShell } from "@/components/guidex-shell";
 import { findTopicReference, getDomain, getTopic, getTopicNeighbors } from "@/lib/guidex-data";
@@ -69,7 +69,7 @@ function TopicPage() {
   </main></GuideXShell>;
 }
 
-function LessonSection({ number, title, children }: { number: string; title: string; children: React.ReactNode }) { return <section className="border-b border-line py-8"><div className="flex items-center gap-4"><span className="font-mono text-[11px] text-acid">{number}</span><h2 className="font-display text-3xl leading-none">{title}</h2></div><div className="mt-5 max-w-2xl text-sm leading-7 text-dim">{children}</div></section>; }
+function LessonSection({ number, title, children }: { number: string; title: string; children: ReactNode }) { return <section className="border-b border-line py-8"><div className="flex items-center gap-4"><span className="font-mono text-[11px] text-acid">{number}</span><h2 className="font-display text-3xl leading-none">{title}</h2></div><div className="mt-5 max-w-2xl text-sm leading-7 text-dim">{children}</div></section>; }
 
 function ReferenceList({ items, domainSlug, empty }: { items: string[]; domainSlug: string; empty: string }) { return items.length ? <ul className="space-y-2">{items.map((reference) => { const topic = findTopicReference(reference, domainSlug); return <li key={reference}>{topic ? <Link to="/topic/$topicId" params={{ topicId: topic.id }} className="text-paper hover:text-acid">{topic.title} <ArrowRight className="inline size-3" /></Link> : <span>{reference}</span>}</li>; })}</ul> : <p>{empty}</p>; }
 
