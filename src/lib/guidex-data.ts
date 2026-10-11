@@ -203,14 +203,22 @@ export function getTopic(id: string) {
   return topic;
 }
 
+export function findTopicReference(reference: string, domainSlug: string) {
+  const normalize = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, "").replace(/s$/, "");
+  const target = normalize(reference);
+  return topics.find((topic) => topic.domainSlug === domainSlug && (normalize(topic.id) === target || normalize(topic.title) === target))
+    ?? topics.find((topic) => normalize(topic.id) === target || normalize(topic.title) === target);
+}
+
+export function getTopicNeighbors(topicId: string) {
+  const topic = getTopic(topicId);
+  const sequence = getRoadmapPhases(topic.domainSlug).flatMap((phase) => phase.topics);
+  const index = sequence.findIndex((entry) => entry.id === topic.id);
+  return { previous: index > 0 ? sequence[index - 1] : undefined, next: index >= 0 ? sequence[index + 1] : undefined };
+}
+
 export function getDomain(slug: string) {
   const domain = domains.find((entry) => entry.slug === slug);
   if (!domain) throw new Error(`Unknown GuideX domain: ${slug}`);
   return domain;
-}
-
-export function getTopic(id: string) {
-  const topic = topics.find((entry) => entry.id === id) ?? topics.find((entry) => entry.id === "arrays");
-  if (!topic) throw new Error(`Unknown GuideX topic: ${id}`);
-  return topic;
 }
